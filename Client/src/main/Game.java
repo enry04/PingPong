@@ -12,31 +12,48 @@ public class Game implements KeyListener {
 
     private GamePanel gamePanel;
     private Player player;
+    private Player enemyPlayer;
     private String username;
+    private PrintWriter printWriter;
+    private Socket clientSocket;
 
-    public Game(GamePanel gamePanel, String username) {
+    public Game(GamePanel gamePanel, String username, Socket clientSocket) {
         this.gamePanel = gamePanel;
         this.gamePanel.addKeyListener(this);
-        player = new Player();
+        player = new Player(100);
+        enemyPlayer = new Player(600);
         this.username = username;
-    }
-
-    public void update(Socket clientSocket) {
-        player.update();
+        this.clientSocket = clientSocket;
         try {
-//            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
-            PrintWriter printWriter = new PrintWriter(clientSocket.getOutputStream());
-            printWriter.println(player.getPosY());
+            printWriter = new PrintWriter(this.clientSocket.getOutputStream());
+            printWriter.println(this.username);
             printWriter.flush();
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
     }
 
+    public void update() {
+        player.update();
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+        printWriter.println(player.getPosY());
+        printWriter.flush();
+        String enemyPosY;
+        try {
+            enemyPosY = bufferedReader.readLine();
+            System.out.println(enemyPosY);
+            enemyPlayer.updateEnemy(Integer.parseInt(enemyPosY));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
     public void draw(Graphics g) {
         g.setColor(Color.BLACK);
-        g.fillRect(0,0, gamePanel.getWidth(), gamePanel.getHeight());
+        g.fillRect(0, 0, gamePanel.getWidth(), gamePanel.getHeight());
         player.draw(g);
     }
 

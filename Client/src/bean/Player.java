@@ -7,13 +7,13 @@ import java.awt.*;
 public class Player {
     private final static int PLAYER_WIDTH = 25;
     private final static int PLAYER_HEIGHT = 75;
-    private int posX = 100;
+    private int posX;
     private int posY = Options.getInstance().getGameHeight() / 2 + PLAYER_HEIGHT / 2;
     private final static int SPEED = 5;
     private boolean isUp = false, isDown = false;
 
-    public Player() {
-
+    public Player(int posX) {
+        this.posX = posX;
     }
 
     public void update() {
@@ -26,6 +26,10 @@ public class Player {
                 posY += SPEED;
             }
         }
+    }
+
+    public void updateEnemy(int posY){
+        this.posY = posY;
     }
 
     public void draw(Graphics g) {

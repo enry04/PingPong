@@ -18,12 +18,13 @@ public class GameManager implements Runnable {
     private String username;
 
     public GameManager() {
+        System.out.println("Inserisci username prima di iniziare");
         Scanner scanner = new Scanner(System.in);
         username = scanner.nextLine();
         try {
             clientSocket = new Socket("localhost", 3000);
             gamePanel = new GamePanel(this);
-            game = new Game(gamePanel, username);
+            game = new Game(gamePanel, username, clientSocket);
             gameWindow = new GameWindow(gamePanel);
             gamePanel.setFocusable(true);
             gamePanel.requestFocus();
@@ -75,7 +76,7 @@ public class GameManager implements Runnable {
     }
 
     private void update() {
-        game.update(clientSocket);
+        game.update();
     }
 
     public void render(Graphics g) {
