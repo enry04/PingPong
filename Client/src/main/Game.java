@@ -47,14 +47,13 @@ public class Game implements KeyListener {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 
     public void draw(Graphics g) {
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, gamePanel.getWidth(), gamePanel.getHeight());
         player.draw(g);
+        enemyPlayer.draw(g);
     }
 
 
