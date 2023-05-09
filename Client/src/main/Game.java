@@ -41,9 +41,10 @@ public class Game implements KeyListener {
         printWriter.flush();
         String enemyPosY;
         try {
-            enemyPosY = bufferedReader.readLine();
-            System.out.println(enemyPosY);
-            enemyPlayer.updateEnemy(Integer.parseInt(enemyPosY));
+            while ((enemyPosY = bufferedReader.readLine()) != null) {
+                System.out.println(enemyPosY);
+                enemyPlayer.updateEnemy(Integer.parseInt(enemyPosY));
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
