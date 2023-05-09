@@ -1,6 +1,7 @@
 package main;
 
 import bean.Player;
+import config.Options;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -12,48 +13,43 @@ public class Game implements KeyListener {
 
     private GamePanel gamePanel;
     private Player player;
+    private PrintWriter output;
+    private Socket clientSocket;
+    private BufferedReader input;
+    private Thread readThread;
     private Player enemyPlayer;
     private String username;
-    private PrintWriter printWriter;
-    private Socket clientSocket;
 
-    public Game(GamePanel gamePanel, String username, Socket clientSocket) {
+    public Game(GamePanel gamePanel, Socket clientSocket, String username) {
         this.gamePanel = gamePanel;
         this.gamePanel.addKeyListener(this);
-        player = new Player(100);
-        enemyPlayer = new Player(600);
         this.username = username;
+        player = new Player();
+        enemyPlayer = new Player();
         this.clientSocket = clientSocket;
         try {
-            printWriter = new PrintWriter(this.clientSocket.getOutputStream());
-            printWriter.println(this.username);
-            printWriter.flush();
+            input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            output = new PrintWriter(this.clientSocket.getOutputStream(), true);
+            output.println(this.username);
+            readThread = new Thread(new ReadThread());
+            readThread.start();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
     }
 
+
     public void update() {
         player.update();
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
-        printWriter.println(player.getPosY());
-        printWriter.flush();
-        String enemyPosY;
-        try {
-            enemyPosY = bufferedReader.readLine();
-            System.out.println(enemyPosY);
-            enemyPlayer.updateEnemy(Integer.parseInt(enemyPosY));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        output.println(player.getPosY());
     }
 
     public void draw(Graphics g) {
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, gamePanel.getWidth(), gamePanel.getHeight());
-        player.draw(g);
         enemyPlayer.draw(g);
+        player.draw(g);
     }
 
 
@@ -87,4 +83,34 @@ public class Game implements KeyListener {
                 break;
         }
     }
+
+    private class ReadThread implements Runnable {
+        @Override
+        public void run() {
+            try {
+                while (true) {
+                    String message = input.readLine();
+                    if (message != null) {
+                        if (message.contains("/position")) {
+                            player.setPosX(Integer.parseInt(message.split(" ")[1]));
+                            enemyPlayer.setPosX(Integer.parseInt(message.split(" ")[2]));
+                        } else {
+                            enemyPlayer.updateEnemy(Integer.parseInt(message));
+                        }
+                        System.out.println("Messaggio ricevuto dal server: " + message);
+                    }
+                }
+            } catch (IOException e) {
+                System.err.println("Errore durante la lettura dei messaggi dal server: " + e.getMessage());
+            } finally {
+                try {
+                    clientSocket.close();
+                } catch (IOException e) {
+                    System.err.println("Errore durante la chiusura della connessione: " + e.getMessage());
+                }
+            }
+        }
+    }
+
+
 }

@@ -12,10 +12,6 @@ public class Player {
     private final static int SPEED = 5;
     private boolean isUp = false, isDown = false;
 
-    public Player(int posX) {
-        this.posX = posX;
-    }
-
     public void update() {
         if (isUp) {
             if (posY >= SPEED - 2) {
@@ -39,6 +35,10 @@ public class Player {
 
     public int getPosX() {
         return posX;
+    }
+
+    public void setPosX(int posX) {
+        this.posX = posX;
     }
 
     public int getPosY() {
