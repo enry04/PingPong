@@ -15,16 +15,14 @@ public class GameManager implements Runnable {
     private static final int FPS_SET = 120;
     private static final int UPS_SET = 200;
     private Socket clientSocket;
-    private String username;
 
     public GameManager() {
-        System.out.println("Inserisci username prima di iniziare");
-        Scanner scanner = new Scanner(System.in);
-        username = scanner.nextLine();
         try {
+            Scanner scanner = new Scanner(System.in);
+            String username = scanner.nextLine();
             clientSocket = new Socket("localhost", 3000);
             gamePanel = new GamePanel(this);
-            game = new Game(gamePanel, username, clientSocket);
+            game = new Game(gamePanel, clientSocket, username);
             gameWindow = new GameWindow(gamePanel);
             gamePanel.setFocusable(true);
             gamePanel.requestFocus();
@@ -68,7 +66,7 @@ public class GameManager implements Runnable {
             }
             if (System.currentTimeMillis() - lastCheck >= 1000) {
                 lastCheck = System.currentTimeMillis();
-                System.out.println("FPS: " + frames + " || UPS: " + updates);
+                //System.out.println("FPS: " + frames + " || UPS: " + updates);
                 frames = 0;
                 updates = 0;
             }
