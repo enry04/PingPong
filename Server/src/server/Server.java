@@ -1,7 +1,5 @@
 package server;
 
-import clientsManager.ClientsManager;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -36,6 +34,7 @@ public class Server {
             player1Reader = new BufferedReader(new InputStreamReader(player1Socket.getInputStream()));
             player1Username = player1Reader.readLine();
             player1Writer.println("/position 100 1148");
+            player1Writer.println("/player 1");
 
             player2Socket = serverSocket.accept();
             System.out.println("Player 2 connected.");
@@ -44,9 +43,11 @@ public class Server {
             player2Reader = new BufferedReader(new InputStreamReader(player2Socket.getInputStream()));
             player2Username = player2Reader.readLine();
             player2Writer.println("/position 1148 100");
+            player2Writer.println("/player 2");
 
             player1Writer.println("/start");
             player2Writer.println("/start");
+            player1Writer.println("/ball");
 //            player1Writer.flush();
 //            player2Writer.flush();
 
@@ -62,19 +63,8 @@ public class Server {
                 player1Writer.println(player2Y);
                 player1Writer.flush();
             }
-
-            //new ClientsManager(clientSocket, this).start();
-
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public void addClient(Socket socket, String username) {
-        clients.put(username, socket);
-    }
-
-    public Map<String, Socket> getClients() {
-        return clients;
     }
 }
