@@ -19,6 +19,7 @@ public class Game implements KeyListener {
     private Thread readThread;
     private Player enemyPlayer;
     private String username;
+    private boolean canStart;
 
     public Game(GamePanel gamePanel, Socket clientSocket, String username) {
         this.gamePanel = gamePanel;
@@ -39,10 +40,12 @@ public class Game implements KeyListener {
 
     }
 
-
     public void update() {
-        player.update();
-        output.println(player.getPosY());
+        if (canStart) {
+            player.update();
+            output.println(player.getPosY());
+        }
+
     }
 
     public void draw(Graphics g) {
@@ -94,6 +97,8 @@ public class Game implements KeyListener {
                         if (message.contains("/position")) {
                             player.setPosX(Integer.parseInt(message.split(" ")[1]));
                             enemyPlayer.setPosX(Integer.parseInt(message.split(" ")[2]));
+                        } else if (message.contains("/start")) {
+                            canStart = true;
                         } else {
                             enemyPlayer.updateEnemy(Integer.parseInt(message));
                         }
@@ -110,6 +115,10 @@ public class Game implements KeyListener {
                 }
             }
         }
+    }
+
+    public boolean isCanStart() {
+        return canStart;
     }
 
 

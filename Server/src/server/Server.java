@@ -28,8 +28,10 @@ public class Server {
     public void listen() {
         try {
             serverSocket = new ServerSocket(3000);
+
             player1Socket = serverSocket.accept();
             System.out.println("Player 1 connected.");
+
             player1Writer = new PrintWriter(player1Socket.getOutputStream(), true);
             player1Reader = new BufferedReader(new InputStreamReader(player1Socket.getInputStream()));
             player1Username = player1Reader.readLine();
@@ -43,14 +45,22 @@ public class Server {
             player2Username = player2Reader.readLine();
             player2Writer.println("/position 1148 100");
 
-            while(true){
+            player1Writer.println("/start");
+            player2Writer.println("/start");
+//            player1Writer.flush();
+//            player2Writer.flush();
+
+            while (true) {
+
                 String player1Y = player1Reader.readLine();
-                System.out.println("Received message from player 1: " + player1Y);
+                System.out.println("Received message from " + player1Username + ": " + player1Y);
                 player2Writer.println(player1Y);
+                player2Writer.flush();
 
                 String player2Y = player2Reader.readLine();
-                System.out.println("Received message from player 2: " + player2Y);
+                System.out.println("Received message from " + player2Username + ": " + player2Y);
                 player1Writer.println(player2Y);
+                player1Writer.flush();
             }
 
             //new ClientsManager(clientSocket, this).start();

@@ -18,6 +18,7 @@ public class GameManager implements Runnable {
 
     public GameManager() {
         try {
+            System.out.print("Inserire username: ");
             Scanner scanner = new Scanner(System.in);
             String username = scanner.nextLine();
             clientSocket = new Socket("localhost", 3000);
@@ -50,6 +51,7 @@ public class GameManager implements Runnable {
         double deltaF = 0;
 
         while (true) {
+
             long currentTime = System.nanoTime();
             deltaU += (currentTime - previousTime) / timePerUpdate;
             deltaF += (currentTime - previousTime) / timePerFrame;
