@@ -4,10 +4,12 @@ import bean.Ball;
 import bean.Player;
 import config.Options;
 
+import javax.sound.sampled.Line;
 import javax.xml.stream.events.EndElement;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.io.*;
 import java.net.Socket;
@@ -24,6 +26,7 @@ public class Game implements KeyListener {
     private String username;
     private boolean canStart, ballOwner = false, isFirstTime = true, isFirstPlayer;
     private Ball ball;
+    private int firstPlayerPoints = 0, secondPlayerPoints = 0;
 
     public Game(GamePanel gamePanel, Socket clientSocket, String username) {
         this.gamePanel = gamePanel;
@@ -57,17 +60,23 @@ public class Game implements KeyListener {
                 }
                 if (ball.getyPos() + Ball.getBallHeight() <= 0 || ball.getyPos() >= Options.getGameHeight()) {
                     ball.setyDir(ball.getyDir() * -1);
-                }
-                if (ball.getxPos() + Ball.getBallWidth() <= 0 || ball.getxPos() >= Options.getGameWidth()) {
+                } else if (ball.getxPos() + Ball.getBallWidth() <= 0) {
+                    secondPlayerPoints++;
+                    System.out.println("Primo giocatore: " + firstPlayerPoints + " punti" + " Secondo giocatore: " + secondPlayerPoints + " punti");
+                    respawnBall();
+                } else if (ball.getxPos() >= Options.getGameWidth()) {
+                    firstPlayerPoints++;
+                    System.out.println("Primo giocatore: " + firstPlayerPoints + " punti" + " Secondo giocatore: " + secondPlayerPoints + " punti");
+                    respawnBall();
+                } else if (new Rectangle(ball.getxPos(), ball.getyPos(), Ball.getBallWidth(), Ball.getBallHeight()).intersectsLine(player.getPosX(), player.getPosY(), player.getPosX(), player.getPosY() + Player.getPlayerHeight()) || new Rectangle(ball.getxPos(), ball.getyPos(), Ball.getBallWidth(), Ball.getBallHeight()).intersectsLine(player.getPosX() + Player.getPlayerWidth(), player.getPosY(), player.getPosX() + Player.getPlayerWidth(), player.getPosY() + Player.getPlayerHeight())) {
                     ball.setxDir(ball.getxDir() * -1);
-                }
-                /*if (new Rectangle(ball.getxPos(), ball.getyPos(), Ball.getBallWidth(), Ball.getBallHeight()).intersects(new Rectangle(player.getPosX(), player.getPosY(), Player.getPlayerWidth(), Player.getPlayerHeight()))) {
+                } else if (new Rectangle(ball.getxPos(), ball.getyPos(), Ball.getBallWidth(), Ball.getBallHeight()).intersectsLine(player.getPosX(), player.getPosY(), player.getPosX() + Player.getPlayerWidth(), player.getPosY()) || new Rectangle(ball.getxPos(), ball.getyPos(), Ball.getBallWidth(), Ball.getBallHeight()).intersectsLine(player.getPosX(), player.getPosY() + Player.getPlayerHeight(), player.getPosX() + Player.getPlayerWidth(), player.getPosY() + Player.getPlayerHeight())) {
+                    ball.setxDir(ball.getyDir() * -1);
+                } else if (new Rectangle(ball.getxPos(), ball.getyPos(), Ball.getBallWidth(), Ball.getBallHeight()).intersectsLine(enemyPlayer.getPosX(), enemyPlayer.getPosY(), enemyPlayer.getPosX(), enemyPlayer.getPosY() + Player.getPlayerHeight()) || new Rectangle(ball.getxPos(), ball.getyPos(), Ball.getBallWidth(), Ball.getBallHeight()).intersectsLine(enemyPlayer.getPosX() + Player.getPlayerWidth(), enemyPlayer.getPosY(), enemyPlayer.getPosX() + Player.getPlayerWidth(), enemyPlayer.getPosY() + Player.getPlayerHeight())) {
                     ball.setxDir(ball.getxDir() * -1);
+                } else if (new Rectangle(ball.getxPos(), ball.getyPos(), Ball.getBallWidth(), Ball.getBallHeight()).intersectsLine(enemyPlayer.getPosX(), enemyPlayer.getPosY(), enemyPlayer.getPosX() + Player.getPlayerWidth(), enemyPlayer.getPosY()) || new Rectangle(ball.getxPos(), ball.getyPos(), Ball.getBallWidth(), Ball.getBallHeight()).intersectsLine(enemyPlayer.getPosX(), enemyPlayer.getPosY() + Player.getPlayerHeight(), enemyPlayer.getPosX() + Player.getPlayerWidth(), enemyPlayer.getPosY() + Player.getPlayerHeight())) {
+                    ball.setxDir(ball.getyDir() * -1);
                 }
-                if (new Rectangle(ball.getxPos(), ball.getyPos(), Ball.getBallWidth(), Ball.getBallHeight()).intersects(new Rectangle(enemyPlayer.getPosX(), enemyPlayer.getPosY(), Player.getPlayerWidth(), Player.getPlayerHeight()))) {
-                    ball.setxDir(ball.getxDir() * -1);
-                }*/
-                //TODO: check every single line of rectangles
                 ball.setyPos(ball.getyPos() + Ball.getBallSpeed() * ball.getyDir());
                 ball.setxPos(ball.getxPos() + Ball.getBallSpeed() * ball.getxDir());
                 output.println("/ballPos " + ball.getxPos() + " " + ball.getyPos());
@@ -87,6 +96,11 @@ public class Game implements KeyListener {
         }
     }
 
+    private void respawnBall() {
+        ball = new Ball(Options.getInstance().getGameWidth() / 2 - Ball.getBallWidth() / 2, Options.getInstance().getGameHeight() / 2 - Ball.getBallHeight());
+        ball.setxDir(-1);
+        ball.setyDir(1);
+    }
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -145,7 +159,6 @@ public class Game implements KeyListener {
                                 isFirstPlayer = false;
                             }
                         }
-                        System.out.println("Messaggio ricevuto dal server: " + message);
                     }
                 }
             } catch (IOException e) {

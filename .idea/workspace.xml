@@ -2,19 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="64ddde8f-1e5d-479e-93b8-e5b6f960b54e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Client/src/bean/Ball.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Client/src/bean/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/Client/src/bean/Player.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Client/src/config/Options.java" beforeDir="false" afterPath="$PROJECT_DIR$/Client/src/config/Options.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Client/src/main/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/Client/src/main/Game.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/src/clientsManager/ClientsManager.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server/src/server/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/Server/src/server/Server.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/artifacts/Client_jar/Client.jar" beforeDir="false" afterPath="$PROJECT_DIR$/out/artifacts/Client_jar/Client.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Client/config/Options.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Client/config/Options.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Client/main/Game$ReadThread.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Client/main/Game$ReadThread.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Client/main/Game.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Client/main/Game.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Server/clientsManager/ClientsManager.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Server/server/Server.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Server/server/Server.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
