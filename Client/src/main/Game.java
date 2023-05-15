@@ -111,12 +111,12 @@ public class Game implements KeyListener {
                             ball.setxPos(Integer.parseInt(message.split(" ")[1]));
                             ball.setyPos(Integer.parseInt(message.split(" ")[2]));
                         } else if (message.contains("/points")) {
-                            System.out.println("I tuoi punti: " + message.split(" ")[1] + " i punti dell' avversario: " + message.split(" ")[2]);
+                            System.out.println("I tuoi punti: " + message.split(" ")[1] + " -------- I punti dell' avversario: " + message.split(" ")[2]);
                         }
                     }
                 }
             } catch (IOException e) {
-                System.err.println("Errore durante la lettura dei messaggi dal server: " + e.getMessage());
+                System.err.println("Un client si è disconnesso: " + e.getMessage());
             } finally {
                 try {
                     clientSocket.close();

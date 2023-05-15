@@ -33,21 +33,21 @@ public class Server implements Runnable {
             serverSocket = new ServerSocket(3000);
 
             player1Socket = serverSocket.accept();
-            System.out.println("Player 1 connected.");
 
             player1Writer = new PrintWriter(player1Socket.getOutputStream(), true);
             player1Reader = new BufferedReader(new InputStreamReader(player1Socket.getInputStream()));
             player1Username = player1Reader.readLine();
             player1 = new Player(100, GAME_HEIGHT / 2 + Player.getPlayerHeight() / 2);
+            System.out.println(player1Username + " connected.");
             player1Writer.println("/position 100 1148");
 
             player2Socket = serverSocket.accept();
-            System.out.println("Player 2 connected.");
 
             player2Writer = new PrintWriter(player2Socket.getOutputStream(), true);
             player2Reader = new BufferedReader(new InputStreamReader(player2Socket.getInputStream()));
             player2Username = player2Reader.readLine();
             player2 = new Player(1148, GAME_HEIGHT / 2 + Player.getPlayerHeight() / 2);
+            System.out.println(player2Username + " connected.");
             player2Writer.println("/position 1148 100");
 
             player1Writer.println("/start");
@@ -100,11 +100,12 @@ public class Server implements Runnable {
                     player1Writer.println(player2Mex);
                 }
                 player1Writer.flush();
+                ball.setyPos(ball.getyPos() + Ball.getBallSpeed() * ball.getyDir());
+                ball.setxPos(ball.getxPos() + Ball.getBallSpeed() * ball.getxDir());
 
                 if (ball.getyPos() + Ball.getBallHeight() <= 0 || ball.getyPos() >= GAME_HEIGHT) {
                     ball.setyDir(ball.getyDir() * -1);
                 } else if (ball.getxPos() + Ball.getBallWidth() <= 0) {
-                    //System.out.println("Primo giocatore: " + firstPlayerPoints + " punti" + " Secondo giocatore: " + secondPlayerPoints + " punti");
                     secondPlayerPoints++;
                     player1Writer.println("/points " + firstPlayerPoints + " " + secondPlayerPoints);
                     player2Writer.println("/points " + secondPlayerPoints + " " + firstPlayerPoints);
@@ -113,7 +114,6 @@ public class Server implements Runnable {
                     firstPlayerPoints++;
                     player1Writer.println("/points " + firstPlayerPoints + " " + secondPlayerPoints);
                     player2Writer.println("/points " + secondPlayerPoints + " " + firstPlayerPoints);
-                    //System.out.println("Primo giocatore: " + firstPlayerPoints + " punti" + " Secondo giocatore: " + secondPlayerPoints + " punti");
                     spawnBall();
                 } else if (new Rectangle(ball.getxPos(), ball.getyPos(), Ball.getBallWidth(), Ball.getBallHeight()).intersectsLine(player1.getPosX(), player1.getPosY(), player1.getPosX(), player1.getPosY() + Player.getPlayerHeight()) || new Rectangle(ball.getxPos(), ball.getyPos(), Ball.getBallWidth(), Ball.getBallHeight()).intersectsLine(player1.getPosX() + Player.getPlayerWidth(), player1.getPosY(), player1.getPosX() + Player.getPlayerWidth(), player1.getPosY() + Player.getPlayerHeight())) {
                     ball.setxDir(ball.getxDir() * -1);
@@ -124,8 +124,6 @@ public class Server implements Runnable {
                 } else if (new Rectangle(ball.getxPos(), ball.getyPos(), Ball.getBallWidth(), Ball.getBallHeight()).intersectsLine(player2.getPosX(), player2.getPosY(), player2.getPosX() + Player.getPlayerWidth(), player2.getPosY()) || new Rectangle(ball.getxPos(), ball.getyPos(), Ball.getBallWidth(), Ball.getBallHeight()).intersectsLine(player2.getPosX(), player2.getPosY() + Player.getPlayerHeight(), player2.getPosX() + Player.getPlayerWidth(), player2.getPosY() + Player.getPlayerHeight())) {
                     ball.setxDir(ball.getyDir() * -1);
                 }
-                ball.setyPos(ball.getyPos() + Ball.getBallSpeed() * ball.getyDir());
-                ball.setxPos(ball.getxPos() + Ball.getBallSpeed() * ball.getxDir());
                 player1Writer.println("/ballPos " + ball.getxPos() + " " + ball.getyPos());
                 player2Writer.println("/ballPos " + ball.getxPos() + " " + ball.getyPos());
             }
