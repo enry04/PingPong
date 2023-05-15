@@ -60,4 +60,12 @@ public class Player {
     public void setDown(boolean down) {
         isDown = down;
     }
+
+    public static int getPlayerHeight() {
+        return PLAYER_HEIGHT;
+    }
+
+    public static int getPlayerWidth() {
+        return PLAYER_WIDTH;
+    }
 }
