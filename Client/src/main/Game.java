@@ -1,7 +1,7 @@
 package main;
 
+import bean.Ball;
 import bean.Player;
-import config.Options;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -12,46 +12,55 @@ import java.net.Socket;
 public class Game implements KeyListener {
 
     private GamePanel gamePanel;
-    private Player player;
     private PrintWriter output;
     private Socket clientSocket;
     private BufferedReader input;
-    private Thread readThread;
-    private Player enemyPlayer;
     private String username;
+    private Thread readThread;
+    private Player player, enemyPlayer;
+    private Ball ball;
+    private boolean canStart = false;
 
     public Game(GamePanel gamePanel, Socket clientSocket, String username) {
         this.gamePanel = gamePanel;
         this.gamePanel.addKeyListener(this);
+        this.clientSocket = clientSocket;
         this.username = username;
         player = new Player();
         enemyPlayer = new Player();
-        this.clientSocket = clientSocket;
+        ball = new Ball();
+        connectPlayer();
+        readThread = new Thread(new ReadThread());
+        readThread.start();
+    }
+
+    private void connectPlayer() {
         try {
             input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            output = new PrintWriter(this.clientSocket.getOutputStream(), true);
+            output = new PrintWriter(clientSocket.getOutputStream(), true);
             output.println(this.username);
-            readThread = new Thread(new ReadThread());
-            readThread.start();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
-
     public void update() {
-        player.update();
-        output.println(player.getPosY());
+        if (canStart) {
+            player.update();
+            output.println("/enemyPos " + player.getPosY());
+            output.flush();
+        }
     }
 
     public void draw(Graphics g) {
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, gamePanel.getWidth(), gamePanel.getHeight());
-        enemyPlayer.draw(g);
-        player.draw(g);
+        if (canStart) {
+            enemyPlayer.draw(g);
+            player.draw(g);
+            g.fillOval(ball.getxPos(), ball.getyPos(), Ball.getBallWidth(), Ball.getBallHeight());
+        }
     }
-
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -94,14 +103,20 @@ public class Game implements KeyListener {
                         if (message.contains("/position")) {
                             player.setPosX(Integer.parseInt(message.split(" ")[1]));
                             enemyPlayer.setPosX(Integer.parseInt(message.split(" ")[2]));
-                        } else {
-                            enemyPlayer.updateEnemy(Integer.parseInt(message));
+                        } else if (message.equals("/start")) {
+                            canStart = true;
+                        } else if (message.contains("/enemyPos")) {
+                            enemyPlayer.updateEnemy(Integer.parseInt(message.split(" ")[1]));
+                        } else if (message.contains("/ballPos")) {
+                            ball.setxPos(Integer.parseInt(message.split(" ")[1]));
+                            ball.setyPos(Integer.parseInt(message.split(" ")[2]));
+                        } else if (message.contains("/points")) {
+                            System.out.println("I tuoi punti: " + message.split(" ")[1] + " -------- I punti dell' avversario: " + message.split(" ")[2]);
                         }
-                        System.out.println("Messaggio ricevuto dal server: " + message);
                     }
                 }
             } catch (IOException e) {
-                System.err.println("Errore durante la lettura dei messaggi dal server: " + e.getMessage());
+                System.err.println("Un client si è disconnesso: " + e.getMessage());
             } finally {
                 try {
                     clientSocket.close();
@@ -111,6 +126,4 @@ public class Game implements KeyListener {
             }
         }
     }
-
-
 }
